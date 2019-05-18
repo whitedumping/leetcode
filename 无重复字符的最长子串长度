@@ -1,0 +1,12 @@
+int lengthOfLongestSubstring(string s) {
+    int res = 0, len = s.length();
+    int c[500] = {0};
+    for(int i = 0, j = 0; j < len; j++){ 
+    //j表示向当前子串末尾添加比较的一个位置,
+    //i记录当前子串比较的开端,每次更新i值为重复字符的写一个坐标
+        i = max(i, c[s[j]]);
+        res = max(res, j - i + 1);
+        c[s[j]] = j + 1;
+    }
+    return res;
+}
