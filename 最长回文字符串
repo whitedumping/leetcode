@@ -1,0 +1,34 @@
+回文字符串这题有好几种解题思路
+动态规划，但是感觉1000长度的字符串，感觉要好多空间
+使用题解中的中心扩展法，枚举每一个中心，偶数中心为两个，不断向两边扩展，直到该中心的最长回文
+需要定义一个全局变量，要不然反复传递字符串，需要消耗巨大空间，和时间（有全局变量为几M空间，无全局变量为一百多M）
+
+class Solution {
+public:
+    string s;
+    int findMaxStr(int left, int right){
+        int len = s.length();
+        while(left >= 0 && right < len && s[left] == s[right]){
+            left--;
+            right++;
+        }
+        return right - left - 1;
+    }
+
+    string longestPalindrome(string ss) {
+        s = ss;
+        if(s.length() < 2) return s;
+        int len = s.length(), len1, len2, t;
+        int start, R, maxLen = 0;
+        for(int i = 0; i < len; i++){
+            len1 = findMaxStr(i, i);
+            len2 = findMaxStr(i, i + 1);
+            t = max(len1, len2);
+            if(maxLen < t){
+                maxLen = t;
+                start = i - (maxLen - 1) / 2;
+            }
+        }
+        return s.substr(start, maxLen);
+    }
+};
