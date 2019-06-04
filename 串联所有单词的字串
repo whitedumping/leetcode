@@ -1,0 +1,66 @@
+示例 1：
+输入：
+  s = "barfoothefoobarman",
+  words = ["foo","bar"]
+输出：[0,9]
+解释：从索引 0 和 9 开始的子串分别是 "barfoor" 和 "foobar" 。输出的顺序不重要, [9,0] 也是有效答案。
+
+思路：
+struct Node{
+    int key, index;
+};  //node数组，用于记录每一个单词的查找到的所有位置，key表示映射对应的单词，重复的单词用相同的key，避免浪费空间（部分用例过过不了）
+每个单词长度是相同的，所以变量node数组的，依次下标加单词长度，判断单词是否查找过
+
+代码有点乱，用了较多空间来标识，效率不高^_^
+static bool cmp(Node a, Node b){
+    return a.index <= b.index;
+}
+vector<int> findSubstring(string s, vector<string>& words) {
+    vector<int> res;
+    if(words.empty() || s.empty() || s.length() < words.size()*words[0].size()) return res;
+    int len1 = words.size(), len2 = s.length(), len3, temp;
+    map<string, int> mp;  //标识重复的单词
+    temp = 0;
+    for(int i = 0; i < len1; i++){
+        if(mp.find(words[i]) == mp.end()) mp[words[i]] = temp++;
+    }
+    len3 = mp.size();
+    int arrCnt[len3 + 5] = {0}; //存储每个单词的个数
+    for(int i = 0; i < len1; i++){
+        arrCnt[mp[words[i]]]++;
+    }
+    Node arr[len3 * len2 + 5];
+    int i_node = 0, step = words[0].length();
+    for(map<string, int> :: iterator it = mp.begin(); it != mp.end(); it++){
+        temp = s.find(it -> first);
+        while(string :: npos != temp){
+            arr[i_node].key = it -> second;
+            arr[i_node].index = temp;
+            i_node++;
+            temp = s.find(it -> first, temp + 1);
+        }
+    }
+    sort(arr, arr + i_node, cmp); //按照每个单词出现的位置排序
+    int a[len3] = {0};
+    bool flag = false;
+    for(int i = 0; i < i_node; i++){
+        temp = arr[i].index + step;
+        a[arr[i].key] = 1;
+        for(int j = i + 1; j < i_node; j++){
+            if(arr[j].index == temp && a[arr[j].key] < arrCnt[arr[j].key]){
+                temp = arr[j].index + step; //若匹配到一个新单词，便按照单词长度继续匹配下去，若失败则下一个i
+                a[arr[j].key]++;
+            }else if(arr[j].index > temp){
+                break;
+            }
+        }
+        flag = true;
+        for(int k = 0; k < len3; k++){  //比较每个单词出现的个数来判断是否匹配
+            if(a[k] != arrCnt[k]) flag = false;
+        }
+
+        if(flag) res.push_back(arr[i].index);
+        memset(a, 0, sizeof(int) * len3);
+    }
+    return res;
+}
