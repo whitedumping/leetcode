@@ -1,0 +1,20 @@
+题目：https://leetcode-cn.com/problems/container-with-most-water/
+
+输入: [1,8,6,2,5,4,8,3,7]
+输出: 49
+解释：8与7之间，距离为7，最大容器为7*7=49
+
+官方题解：https://leetcode-cn.com/problems/container-with-most-water/solution/sheng-zui-duo-shui-de-rong-qi-by-leetcode/
+双指针：
+首尾两个指针，每次移动较短的板子，以此有可能牺牲宽度-1，来获取更加长的板子，增加容器空间
+
+int maxArea(vector<int>& height) {
+    int i = 0, j = height.size() - 1;
+    int res = 0;
+    while(i < j){
+        res = max(res, min(height[i], height[j]) * (j - i));
+        if(height[i] < height[j]) i++;
+        else j--;
+    }
+    return res;
+}
