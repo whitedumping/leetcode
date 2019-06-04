@@ -1,0 +1,31 @@
+示例 1:
+输入: "(()"
+输出: 2
+解释: 最长有效括号子串为 "()"
+
+示例 2:
+输入: ")()())"
+输出: 4
+解释: 最长有效括号子串为 "()()"
+
+官方题解：https://leetcode-cn.com/problems/longest-valid-parentheses/solution/zui-chang-you-xiao-gua-hao-by-leetcode/
+动态规划：s[i] == ')' and s[i - 1] == '(',即形如"....()" dp[i] = dp[i - 2] + 2;
+         形如"......))",s[i] == ')' and s[i - 1] == ')', if s[i - (dp[i - 1] + 1)] == '(', so dp[i] = dp[i - 1] + dp[i - (dp[i - 1] + 1)] + 2
+
+使用栈：
+        int longestValidParentheses(string s) {
+            stack<int> sk;
+            sk.push(-1);
+            int i, len = s.length(), maxLength = 0;
+            for(i = 0; i < len; i++){
+                if(s[i] == ')' && sk.top() > -1 && s[sk.top()] == '('){
+                    sk.pop();
+                    maxLength = max(maxLength, i - sk.top());
+                    if(sk.empty()) sk.push(i - 1);
+                }else{
+                    sk.push(i);
+                }
+            }
+            return maxLength;
+        }
+常数空间的栈：https://leetcode-cn.com/problems/longest-valid-parentheses/solution/zui-chang-you-xiao-gua-hao-by-leetcode/
