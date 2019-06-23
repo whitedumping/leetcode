@@ -1,0 +1,39 @@
+题目：https://leetcode-cn.com/problems/first-missing-positive/
+给定一个未排序的整数数组，找出其中没有出现的最小的正整数。
+示例 1:
+输入: [1,2,0]
+输出: 3
+示例 2:
+输入: [3,4,-1,1]
+输出: 2
+示例 3:
+输入: [7,8,9,11,12]
+输出: 1
+
+官方题解：哈希散列，建立一个数组，利用对应的下标来进行标记，然后循环遍历，查找第一个未出现的正数，该方法对空间比较浪费
+        对上方法改进，下标为索引，所存数字为负数则表示当前下标数出现过
+        分析题目条件，数组长度为n，则结果必定为1 - n + 1；
+
+int firstMissingPositive(vector<int>& nums) {
+    int len = nums.size(), flag = 0;
+    for(int i = 0; i < len; i++){
+        if(nums[i] == 1){
+            flag = 1;
+        }
+        //修改数组中非正数和大于长度的数为1
+        if(nums[i] <= 0 || nums[i] > len) nums[i] = 1;
+    }
+    if(!flag) return 1;
+    else{
+        for(int i = 0; i < len; i++){
+            if(abs(nums[i]) == len) nums[0] = -1 * abs(nums[0]);
+            else nums[abs(nums[i])] = -1 * abs(nums[abs(nums[i])]);
+        }
+    }
+
+    for(int i = 1; i < len; i++){
+        if(nums[i] > 0) return i;
+    }
+    if(nums[0] > 0) return len;
+    return len + 1;
+}
