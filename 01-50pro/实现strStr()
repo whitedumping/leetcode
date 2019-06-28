@@ -20,7 +20,6 @@ void getNext(string s, int next[]){
         }
     }
 }
-
 int strStr(string haystack, string needle) {
     int len1 = needle.length(), len2 = haystack.length();
     if(len2 == 0 && len1 == 0) return 0;
