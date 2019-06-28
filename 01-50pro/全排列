@@ -1,0 +1,34 @@
+题目链接：https://leetcode-cn.com/problems/permutations
+给定一个没有重复数字的序列，返回其所有可能的全排列。
+示例:
+输入: [1,2,3]
+输出:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+
+题解回溯法，参考回溯模板
+vector<vector<int>> res;
+vector<vector<int>> permute(vector<int>& nums) {
+    int len = nums.size();
+    vector<int> temp = {nums.begin(), nums.end()};
+    backtrace(temp, 0, len);
+    return res;
+}
+
+void backtrace(vector<int>& temp, int first, int len){
+    if(first == len){
+        res.push_back(vector<int> {temp.begin(), temp.end()});
+    }else{
+        for(int i = first; i < len; i++){
+            swap(temp[first], temp[i]);
+            backtrace(temp, first + 1, len);
+            swap(temp[first], temp[i]);
+        }
+    }
+}
