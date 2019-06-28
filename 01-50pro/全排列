@@ -12,7 +12,8 @@
   [3,2,1]
 ]
 
-题解回溯法，参考回溯模板
+题解回溯法，参考回溯模板：myStudyLoad/leetcode组数总和--回溯法
+https://github.com/whitedumping/myStudyLoad/blob/master/leetcode%E7%BB%84%E6%95%B0%E6%80%BB%E5%92%8C--%E5%9B%9E%E6%BA%AF%E6%B3%95
 vector<vector<int>> res;
 vector<vector<int>> permute(vector<int>& nums) {
     int len = nums.size();
