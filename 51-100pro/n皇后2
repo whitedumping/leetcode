@@ -1,1 +1,53 @@
-![image]https://github.com/whitedumping/leetcode/tree/master/images/n皇后2-1.PNG
+链接：https://leetcode-cn.com/problems/n-queens-ii
+n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+上图为 8 皇后问题的一种解法。
+给定一个整数 n，返回 n 皇后不同的解决方案的数量。
+示例:
+输入: 4
+输出: 2
+解释: 4 皇后问题存在如下两个不同的解法。
+[
+ [".Q..",  // 解法 1
+  "...Q",
+  "Q...",
+  "..Q."],
+
+ ["..Q.",  // 解法 2
+  "Q...",
+  "...Q",
+  ".Q.."]
+]
+
+思路：该题比前一题可用较少的空间，直接计算摆法的个数，不需要保存具体摆法，使用位运算较快bitmap
+
+int nq, cnt;
+int totalNQueens(int n) {
+    cnt = 0, nq = n;
+    backtracking(0, 0, 0, 0);
+    return cnt;
+}
+
+void backtracking(int row, int h, int ld, int rd){
+    if(row == nq){
+        cnt++;
+    }else{
+        //寻找当前可选的列
+        int pos = (1 << nq) - 1, p;
+        pos = pos & ~(h | ld | rd);
+        while(pos > 0){
+            // 拷贝pos最右边为1的bit，其余bit置0  
+            // 也就是取得可以放皇后的最右边的列  
+            p = pos & -pos;
+            //尝试性当前位置加入Q
+            //将尝试加入Q的位置为1
+            pos -= p;
+            //开始回溯下一个Q
+            // row + p，将当前列置1，表示记录这次皇后放置的列。  
+            // (ld + p) << 1，标记当前皇后左边相邻的列不允许下一个皇后放置
+            // (ld + p) >> 1，标记当前皇后右边相邻的列不允许下一个皇后放置
+            //关于如何为何要左移与右移，每一行的当前位置被放置Q之后，则下一行的当前位置的左边一位或者右边以为刚好对应Q的两条对角线不能放置Q
+            //详情参考：https://blog.csdn.net/kai_wei_zhang/article/details/8033194
+            backtracking(row + 1, h + p, (ld + p) << 1, (rd + p) >> 1);
+        }
+    }
+}
