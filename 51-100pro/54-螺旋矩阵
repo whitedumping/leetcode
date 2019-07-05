@@ -1,0 +1,59 @@
+链接：https://leetcode-cn.com/problems/spiral-matrix
+给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
+示例 1:
+输入:
+[
+ [ 1, 2, 3 ],
+ [ 4, 5, 6 ],
+ [ 7, 8, 9 ]
+]
+输出: [1,2,3,6,9,8,7,4,5]
+示例 2:
+输入:
+[
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+  [9,10,11,12]
+]
+输出: [1,2,3,4,8,12,11,10,9,5,6,7]
+
+思路：模拟
+
+vector<int> spiralOrder(vector<vector<int>>& matrix) {
+    vector<int> res;
+    if(matrix.empty()) return res;
+    int a = matrix.size(), b = matrix[0].size(), t = 0;
+    int count = a * b, cnt = 0;
+    int i = 0, j = 0;
+    //按照四条边的顺序进行模拟，t表示当前循环的层数
+    while(cnt < count){
+        //上边
+        while(i - t == 0 && j + t < b && cnt < count){
+            cnt++;
+            res.push_back(matrix[i][j++]);
+        }
+        i++;j--;
+        //右边
+        while(i + t < a && j + t + 1 == b && cnt < count){
+            cnt++;
+            res.push_back(matrix[i++][j]);
+        }
+        i--;j--;
+        //下边
+        while(i + t + 1 == a && j - t >= 0 && cnt < count){
+            cnt++;
+            res.push_back(matrix[i][j--]);
+        }
+        i--;j++;
+        //左边
+        t++;
+        //while(i - t >= 0 && j - t == 0 && cnt < count){
+        while(i - t >= 0 && cnt < count){
+            cnt++;
+            res.push_back(matrix[i--][j]);
+        }
+        i++;j++;
+        //t++;
+    }
+    return res;
+}
