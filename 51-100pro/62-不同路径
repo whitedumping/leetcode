@@ -1,0 +1,63 @@
+链接：https://leetcode-cn.com/problems/unique-paths
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+问总共有多少条不同的路径？
+
+
+例如，上图是一个7 x 3 的网格。有多少可能的路径？
+说明：m 和 n 的值均不超过 100。
+
+示例 1:
+输入: m = 3, n = 2
+输出: 3
+解释:
+从左上角开始，总共有 3 条路径可以到达右下角。
+1. 向右 -> 向右 -> 向下
+2. 向右 -> 向下 -> 向右
+3. 向下 -> 向右 -> 向右
+示例 2:
+输入: m = 7, n = 3
+输出: 28
+
+思路：动态规划/回溯：依次按照题意，要达到当前格子的话，只能从左边或者上边的格子，即只需要考虑子问题，左边和上边格子的路径，dp[i][j] = dp[i][j - 1] + dp[i - 1][j]
+     优化：因为我们每次只需要 dp[i-1][j],dp[i][j-1]，所以我们只要记录这两个数
+
+int uniquePaths(int m, int n) {
+    /*vector<vector<int>> temp(m, vector<int>(n, 0));
+    temp[0][0] = 1;
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++){
+            if(i - 1 >= 0) temp[i][j] += temp[i - 1][j];
+            if(j - 1 >= 0) temp[i][j] += temp[i][j - 1];
+        }
+    }*/
+    //优化：因为我们每次只需要 dp[i-1][j],dp[i][j-1]
+    //所以我们只要记录这两个数，直接看代码吧！
+    /*vector<int> up(n, 0);
+    int res = 1;
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++){
+            //每次的res相对于表示上一次计算结果，对下一次计算而言，相当于左边的值，只需要加对应的up[j]即可
+            res += up[j];
+            up[j] = res;
+        }
+        res = 0;
+    }
+    return up[n - 1];*/
+
+    vector<int> up(n, 0);
+    int left = 0;
+    int res = 1;
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++){
+            //每次的res相对于表示上一次计算结果，对下一次计算而言，相当于左边的值，只需要加对应的up[j]即可
+            res += left + up[j];
+            up[j] = res;
+            left = res;
+            res = 0;
+        }
+        res = 0;
+        left = 0;
+    }
+    return up[n - 1];
+}
