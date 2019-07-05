@@ -1,0 +1,75 @@
+链接：https://leetcode-cn.com/problems/insert-interval
+给出一个无重叠的 ，按照区间起始端点排序的区间列表。
+在列表中插入一个新的区间，你需要确保列表中的区间仍然有序且不重叠（如果有必要的话，可以合并区间）。
+
+示例 1:
+输入: intervals = [[1,3],[6,9]], newInterval = [2,5]
+输出: [[1,5],[6,9]]
+示例 2:
+输入: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+输出: [[1,2],[3,10],[12,16]]
+解释: 这是因为新的区间 [4,8] 与 [3,5],[6,7],[8,10] 重叠。
+
+思路：对于已经排好序的区间，判断当前需要插入区间的左右位置，然后进行合并或插入
+
+vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+    int len = intervals.size();
+    if(len == 0){
+        intervals.push_back(newInterval);
+        return intervals;
+    }
+    //插入newInterval的位置
+    int a, b;
+    int left = 0, right = len, mid;
+    //寻找需插入区间的左边值所在的位置
+    while(left < right){
+        mid = (left + right) / 2;
+        if(intervals[mid][0] >= newInterval[0]){
+            right = mid;
+        }else left = mid + 1;
+    }
+    if(left > 0){
+        //对于当前left值，如果区间的左边值在前一个区间的范围呢，则left--，即需要和并上一个区间
+        if(intervals[left - 1][1] >= newInterval[0]) left--;
+    }
+    cout<<left<<endl;
+    a = left;
+    left = 0; right = len;
+    //寻找需插入区间的右边值所在的位置
+    while(left < right){
+        mid = (left + right) / 2;
+        if(intervals[mid][1] > newInterval[1]){
+            right = mid;
+        }else left = mid + 1;
+    }
+    //对于当前left值，如果区间的左边值在前一个区间的范围呢，则left--，即需要和并上一个区间，若在右边区间，亦需要合并
+    if(left < len){
+        if(intervals[left][0] > newInterval[1]) left--;
+    }else{
+        if(intervals[left - 1][1] >= newInterval[0]) left--;
+    }
+    cout<<left<<endl;
+    b = left;
+    //cout<<a<<endl;
+    //cout<<b<<endl;
+
+    if(b == -1){
+        intervals.insert(intervals.begin(), newInterval);
+    }else if(a != b){
+        //左右两边在不同的位置，即需要合并ab直接的区间
+        if(a >= 0 && a < len) newInterval[0] = min(intervals[a][0], newInterval[0]);
+        if(b >= 0 && b < len) newInterval[1] = max(intervals[b][1], newInterval[1]);
+        intervals.erase(intervals.begin() + a, intervals.begin() + b + 1);
+        intervals.insert(intervals.begin() + a, newInterval);
+    }else{
+        //表示需要和当前位置的的区间合并
+        if(a >= 0 && a < len){
+            if((intervals[a][0] >= newInterval[0] && intervals[a][0] <= newInterval[1]) || (intervals[a][1] >= newInterval[0] && intervals[a][0] <= newInterval[1])){
+                intervals[a][0] = min(intervals[a][0], newInterval[0]);
+                intervals[a][1] = max(intervals[a][1], newInterval[1]);
+            }
+        }else{  //需要插入到当前位置
+            intervals.insert(intervals.begin() + a, newInterval);
+        }
+    }
+    return intervals;
