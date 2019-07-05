@@ -1,0 +1,52 @@
+链接：https://leetcode-cn.com/problems/spiral-matrix-ii
+给定一个正整数 n，生成一个包含 1 到 n2 所有元素，且元素按顺时针顺序螺旋排列的正方形矩阵。
+
+示例:
+输入: 3
+输出:
+[
+ [ 1, 2, 3 ],
+ [ 8, 9, 4 ],
+ [ 7, 6, 5 ]
+]
+
+模拟
+vector<vector<int>> generateMatrix(int n) {
+    vector<vector<int>> res(n, vector<int>(n));
+    int i = 0, j = 0, t = 0;
+    int cnt = 0, count = n * n;
+    while(cnt < count){
+        //上边
+        while(i - t == 0 && j + t < n && cnt < count){
+            cnt++;
+            res[i][j++] = cnt;
+            //res.push_back(matrix[i][j++]);
+        }
+        i++;j--;
+        //右边
+        while(i + t < n && j + t + 1 == n && cnt < count){
+            cnt++;
+            res[i++][j] = cnt;
+            //res.push_back(matrix[i++][j]);
+        }
+        i--;j--;
+        //下边
+        while(i + t + 1 == n && j - t >= 0 && cnt < count){
+            cnt++;
+            res[i][j--] = cnt;
+            //res.push_back(matrix[i][j--]);
+        }
+        i--;j++;
+        //左边
+        t++;
+        //while(i - t >= 0 && j - t == 0 && cnt < count){
+        while(i - t >= 0 && cnt < count){
+            cnt++;
+            res[i--][j] = cnt;
+            //res.push_back(matrix[i--][j]);
+        }
+        i++;j++;
+        //t++;
+    }
+    return res;
+}
