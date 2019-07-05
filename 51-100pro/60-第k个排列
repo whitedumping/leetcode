@@ -1,0 +1,60 @@
+链接：https://leetcode-cn.com/problems/permutation-sequence
+给出集合 [1,2,3,…,n]，其所有元素共有 n! 种排列。
+
+按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+给定 n 和 k，返回第 k 个排列。
+说明：
+给定 n 的范围是 [1, 9]
+给定 k 的范围是[1,  n!]
+
+示例 1:
+输入: n = 3, k = 3
+输出: "213"
+示例 2:
+输入: n = 4, k = 9
+输出: "2314"
+
+思路：直接依次计算下一个排列，枚举，效率不高，有很多不需要的枚举
+      （如示例中的123，若k=5，则对应3开头）
+      改进按照当前所求的k值来判断，所求排列所在的大概区域段
+
+string temp;
+string getPermutation(int n, int k) {
+    for(int i = 1; i <= n; i++){
+        temp += i + '0';
+    }
+    while(--k > 0){
+        //cout<<temp<<endl;
+        nextPermutation();
+    }
+    return temp;
+}
+//枚举下一个排列，即寻找到第一个..ab..（a < b)的情况，将是替换为b之后第一个大于a的值，并替换后将b之后的进行升序表示
+void nextPermutation(){
+    int len = temp.length();
+    int t = len - 1;
+    char a;
+    while(t > 0){
+        if(temp[t] > temp[t - 1]){
+            reverse(temp.begin() + t, temp.end());
+            a = temp[t - 1];
+            int i = t;
+            while(i < len){
+                if(temp[i] > a) break;
+                i++;
+            }
+            temp[t - 1] = temp[i];
+            temp[i] = a;
+            break;
+        }else{
+            t--;
+        }
+    }
+}
