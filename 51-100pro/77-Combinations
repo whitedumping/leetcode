@@ -1,0 +1,37 @@
+链接：https://leetcode-cn.com/problems/combinations
+Given two integers n and k, return all possible combinations of k numbers out of 1 ... n.
+
+Example:
+Input: n = 4, k = 2
+Output:
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+
+回溯：依次枚举
+
+vector<vector<int>> res;
+int tempk, tempn;
+vector<vector<int>> combine(int n, int k) {
+    tempk = k;
+    tempn = n;
+    vector<int> temp;
+    backtracking(1, 0, temp);
+    return res;
+}
+
+void backtracking(int start, int cnt, vector<int>& temp){
+    if(cnt == tempk) res.push_back(vector<int> (temp.begin(), temp.end()));
+    else{
+        for(int i  = start; i <= tempn - tempk + cnt + 1; i++){
+            temp.push_back(i);
+            backtracking(i + 1, cnt + 1, temp);
+            temp.pop_back();
+        }
+    }
+}
