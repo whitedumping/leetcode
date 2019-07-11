@@ -1,0 +1,39 @@
+链接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii
+Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+(i.e., [0,0,1,2,2,5,6] might become [2,5,6,0,0,1,2]).
+You are given a target value to search. If found in the array return true, otherwise return false.
+
+Example 1:
+Input: nums = [2,5,6,0,0,1,2], target = 0
+Output: true
+
+Example 2:
+Input: nums = [2,5,6,0,0,1,2], target = 3
+Output: false
+
+bool search(vector<int>& nums, int target) {
+    int len = nums.size();
+    if(len < 1) return false;
+    int left = 0, right = len - 1, mid;
+    while(left <= right){
+        mid = left + (right - left) / 2;
+        if(nums[mid] == target) return true;
+        else if(nums[left] == nums[mid] && nums[mid] == nums[right]){ //由于三个值都相同，无法分辨出在左边还是右边
+            left++;
+            right--;
+        }
+        //利用题目的条件nums是有序
+        else if(nums[left] <= nums[mid]){//左边连续
+            //判断target是否在左边
+            if(nums[left] <= target && target < nums[mid]){
+                right = mid - 1;
+            }else left = mid + 1;   //去右边找
+        }else{
+            //判断target是否在右边
+            if(nums[right] >= target && target > nums[mid]){
+                left = mid + 1;
+            }else right = mid - 1;   //去左边找
+        }
+    }
+    return false;
+}
