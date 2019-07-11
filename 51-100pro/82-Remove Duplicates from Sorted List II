@@ -1,0 +1,42 @@
+链接：https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii
+Given a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list.
+
+Example 1:
+Input: 1->2->3->3->4->4->5
+Output: 1->2->5
+
+Example 2:
+Input: 1->1->1->2->3
+Output: 2->3
+
+ListNode* deleteDuplicates(ListNode* head) {
+    if(head == NULL) return head;
+    ListNode *res = new ListNode(head -> val != INT_MIN ? INT_MIN : head -> val + 1);
+    ListNode *pre = res, *t = res, *right;
+    //preval保存因为出现多次而无法加入的数
+    int preval = pre -> val;
+    right = head -> next;
+    while(head != NULL){
+        if(head -> val != pre -> val){
+            //正常可以加入的数
+            if(right != NULL && head -> val != right -> val && head -> val != preval){
+                res -> next = head;
+                res = res -> next;
+                pre = head;
+                right = right -> next;
+            //判断最后一个数
+            }else if(right == NULL && head -> val != preval){
+                res -> next = head;
+                res = res -> next;
+                pre = head;
+            }else{//不满足加入的条件，跟新preval
+                preval = head -> val;
+                right = right != NULL ? right -> next : NULL;
+            }
+        }
+
+        head = head -> next;
+    }
+    res -> next = NULL;
+    return t -> next;
+}
