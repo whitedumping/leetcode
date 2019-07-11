@@ -1,0 +1,75 @@
+链接：https://leetcode-cn.com/problems/word-search
+Given a 2D board and a word, find if the word exists in the grid.
+The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+Example:
+board =
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+
+Given word = "ABCCED", return true.
+Given word = "SEE", return true.
+Given word = "ABCB", return false.
+
+思路，按照回溯、深度遍历
+
+vector<int> flag;
+int m, n, lenword;
+bool res = false;
+vector<vector<char>> tempboard;
+string tempword;
+bool exist(vector<vector<char>>& board, string word) {
+    if(word.empty()) return true;
+    if(board.empty()) return false;
+    m = board.size(), n = board[0].size(), lenword = word.length();
+    if(n == 0) return false;
+
+    flag = vector<int>(m * n, 0);
+    tempboard = board;
+    tempword = word;
+
+    if(m == 1 && n == 1 && lenword == 1 && board[0][0] == word[0]) return true;
+
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++){
+            if(board[i][j] == word[0] && res == false) backtracking(0, i, j);
+            if(res) return true;
+            else continue;
+        }
+    }
+
+    return false;
+}
+
+void backtracking(int i_word, int i, int j){
+    if(i_word == lenword) res = true;
+    if(res == false && flag[i * n + j] == 0 && tempboard[i][j] == tempword[i_word]){ //当前格子匹配，遍历下一个格子
+        //选中当前格子
+        flag[i * n + j] = 1;
+        //上边格子
+        if(i - 1 >= 0){
+            backtracking(i_word + 1, i - 1, j);
+        }
+
+        //右边格子
+        if(j + 1 < n){
+            backtracking(i_word + 1, i, j + 1);
+        }
+
+        //下边格子
+        if(i + 1 < m){
+            backtracking(i_word + 1, i + 1, j);
+        }
+
+        //左边格子
+        if(j - 1 >= 0){
+            backtracking(i_word + 1, i, j - 1);
+        }
+
+        //回溯
+        flag[i * n + j] = 0;
+    }
+}
