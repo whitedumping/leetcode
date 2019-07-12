@@ -1,0 +1,28 @@
+链接：https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list
+Given a sorted linked list, delete all duplicates such that each element appear only once.
+
+Example 1:
+Input: 1->1->2
+Output: 1->2
+
+Example 2:
+Input: 1->1->2->3->3
+Output: 1->2->3
+
+//保存前一个值，依次比较
+ListNode* deleteDuplicates(ListNode* head) {
+    if(head == NULL) return head;
+    ListNode *res = new ListNode(head -> val != INT_MIN ? head -> val - 1 : 0);
+    ListNode *t = res;
+    int pre = res -> val;
+    while(head != NULL){
+        if(head -> val != pre){
+            res -> next = head;
+            res = res -> next;
+            pre = head -> val;
+        }
+        head = head -> next;
+    }
+    res -> next = NULL;
+    return t -> next;
+}
