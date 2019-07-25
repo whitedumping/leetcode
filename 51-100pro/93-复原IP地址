@@ -1,0 +1,38 @@
+链接：https://leetcode-cn.com/problems/restore-ip-addresses
+给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
+
+示例:
+输入: "25525511135"
+输出: ["255.255.11.135", "255.255.111.35"]
+
+回溯：依次枚举
+class Solution {
+public:
+    string ss;
+    vector<string> res;
+    vector<string> restoreIpAddresses(string s) {
+        ss = s;
+        if(s.length() < 4 || s.length() > 12) return res;
+        vector<int> temp;
+        backtracking(0, temp);
+        return res;
+    }
+    
+    void backtracking(int start, vector<int>& temp){
+        if(temp.size() == 4 && start == ss.length()){
+            string t = to_string(temp[0]);
+            for(int i = 1; i < 4; i++) t += "." + to_string(temp[i]);
+            res.push_back(t);
+        }else{
+            int t = 0;
+            for(int i = start; i < ss.length() && i < start + 3; i++){
+                if(i != start && t == 0) break;
+                t = t * 10 + ss[i] - '0';
+                if(t > 255) break;
+                temp.push_back(t);
+                backtracking(i + 1, temp);
+                temp.pop_back();
+            }
+        }
+    }
+};
