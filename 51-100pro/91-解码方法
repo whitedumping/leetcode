@@ -1,0 +1,42 @@
+链接：https://leetcode-cn.com/problems/decode-ways
+一条包含字母 A-Z 的消息通过以下方式进行了编码：
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+给定一个只包含数字的非空字符串，请计算解码方法的总数。
+
+示例 1:
+输入: "12"
+输出: 2
+解释: 它可以解码为 "AB"（1 2）或者 "L"（12）。
+示例 2:
+输入: "226"
+输出: 3
+解释: 它可以解码为 "BZ" (2 26), "VF" (22 6), 或者 "BBF" (2 2 6) 。
+
+策略：当前位置可以有两种选项，去两个字符/去一个字符
+      需要判断当前的位置是否可以有两种选项
+      temp[i] += temp[i - 1] / temp[i] += temp[i - 2]
+class Solution {
+public:
+    int numDecodings(string s) {
+        int len = s.length();
+        if(len == 0) return 0;
+        vector<int> temp(len + 1, 0);
+        temp[0] = 1;
+        for(int i = 1; i <= len; i++){
+            if(s[i - 1] != '0') temp[i] += temp[i - 1];
+            if(i > 1){
+                int t = (s[i - 2] - '0') * 10 + s[i - 1] - '0';
+                //cout<<t<<endl;
+                if(t == 0) return 0;
+                if(t > 9 && t < 27){
+                    temp[i] += temp[i - 2];
+                }
+            }
+        }
+        return temp[len];
+    }
+    
+};
