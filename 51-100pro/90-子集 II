@@ -1,0 +1,47 @@
+链接：https://leetcode-cn.com/problems/subsets-ii
+给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+说明：解集不能包含重复的子集。
+
+示例:
+输入: [1,2,2]
+输出:
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+
+回溯，依次增加子集中元素的个数
+
+class Solution {
+public:
+    vector<vector<int>> res;
+    vector<int> n;
+    int len;
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        n = nums;
+        len = nums.size();
+        vector<int> temp;
+        for(int i = 0; i <= len; i++){
+            backtracking(i, 0, temp);
+        }
+        return res;
+    }
+    //s表示当前子集中元素的个数
+    void backtracking(int s, int start, vector<int>& temp){
+        if(temp.size() == s) res.push_back(vector<int>(temp.begin(), temp.end()));
+        else{
+            for(int i = start; i < len; i++){
+                //跳过重复项
+                if(i != start && n[i - 1] == n[i]) continue;
+                temp.push_back(n[i]);
+                backtracking(s, i + 1, temp);
+                temp.pop_back();
+            }
+        }
+    }
+};
