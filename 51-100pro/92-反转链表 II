@@ -1,0 +1,47 @@
+链接：https://leetcode-cn.com/problems/reverse-linked-list-ii
+反转从位置 m 到 n 的链表。请使用一趟扫描完成反转。
+
+说明:
+1 ≤ m ≤ n ≤ 链表长度。
+
+示例:
+输入: 1->2->3->4->5->NULL, m = 2, n = 4
+输出: 1->4->3->2->5->NULL
+
+思路：计数，对左右两部分的分别保存，中间部分采用首插入
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int m, int n) {
+        ListNode *res = new ListNode(0);
+        ListNode *temp1 = NULL;
+        ListNode *p1 = NULL, *t = res, *tt;
+        int cnt = 0;
+        while(head != NULL){
+            cnt++;
+            if(cnt < m){
+                t -> next = head;
+                t = t -> next;
+                head = head -> next;
+            }else if(cnt >= m && cnt <= n){   //need to reverse
+                if(cnt == m) temp1 = head;
+                tt = head;
+                head = head -> next;
+                tt -> next = p1;
+                p1 = tt;
+            }else{
+                break;
+            }
+        }
+        temp1 -> next = head;
+        t -> next = p1;
+        return res -> next;
+    }
+};
