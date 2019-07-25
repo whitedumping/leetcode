@@ -1,0 +1,82 @@
+链接：https://leetcode-cn.com/problems/recover-binary-search-tree
+二叉搜索树中的两个节点被错误地交换。
+请在不改变其结构的情况下，恢复这棵树。
+
+示例 1:
+输入: [1,3,null,null,2]
+   1
+  /
+ 3
+  \
+   2
+输出: [3,1,null,null,2]
+   3
+  /
+ 1
+  \
+   2
+示例 2:
+输入: [3,1,4,null,null,2]
+  3
+ / \
+1   4
+   /
+  2
+输出: [2,1,4,null,null,3]
+  2
+ / \
+1   4
+   /
+  3
+
+思路：首先中序遍历，当出现前一个值大于后一个值时，便需要修改的
+      第一个节点，如2，1为取前一个2
+      第二个节点，如2，1，4，3为去后者一个3
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode *p1 = NULL, *p2 = NULL;
+    queue<TreeNode*> q;
+    void recoverTree(TreeNode* root) {
+        int flag = 0;
+        inorder(root, &flag);
+        if(p1 != NULL && p2 != NULL){
+            int t = p1 -> val;
+            p1 -> val = p2 -> val;
+            p2 -> val = t;
+        }
+    }
+    
+    void inorder(TreeNode *root, int* flag){
+        if(*flag == 2) return;
+        if(root != NULL){
+            if(root -> left != NULL) inorder(root -> left, flag);
+            q.push(root);
+            if(q.size() == 2){
+                TreeNode *temp1 = q.front();
+                TreeNode *temp2 = q.back();
+                if(temp1 -> val > temp2 -> val){
+                    if(*flag == 0){
+                        p1 = temp1;
+                        p2 = temp2;
+                    }
+                    if(*flag == 1){
+                        p2 = temp2;
+                    }
+                    (*flag)++;
+                }
+                q.pop();
+                
+            }
+            if(root -> right != NULL) inorder(root -> right, flag);
+        }
+    }
+};
