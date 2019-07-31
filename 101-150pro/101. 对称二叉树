@@ -1,0 +1,63 @@
+链接：https://leetcode-cn.com/problems/symmetric-tree
+给定一个二叉树，检查它是否是镜像对称的。
+例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:
+    1
+   / \
+  2   2
+   \   \
+   3    3
+
+copy树，左右子树交换
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSymmetric(TreeNode* root) {
+        TreeNode* temp = copy(root);
+        return isSameTree(root, temp); 
+    }
+    
+    TreeNode* copy(TreeNode* root){
+        if(root == NULL) return NULL;
+        TreeNode* t = new TreeNode(root -> val);
+        t -> left = copy(root -> right);
+        t -> right = copy(root -> left);
+        return t;
+    }
+    
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if(p == NULL && q == NULL) return true;
+        if(p != NULL && q != NULL){
+            if(p -> val == q -> val){
+                return isSameTree(p -> left, q -> left) & isSameTree(p -> right, q -> right);
+            }else return false;
+        }else return false;
+    }
+};
+
+递归比较，链接：https://leetcode-cn.com/problems/two-sum/solution/dui-cheng-er-cha-shu-by-leetcode/
+public boolean isSymmetric(TreeNode root) {
+    return isMirror(root, root);
+}
+
+public boolean isMirror(TreeNode t1, TreeNode t2) {
+    if (t1 == null && t2 == null) return true;
+    if (t1 == null || t2 == null) return false;
+    return (t1.val == t2.val)
+        && isMirror(t1.right, t2.left)
+        && isMirror(t1.left, t2.right);
+}
