@@ -1,0 +1,52 @@
+链接：https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal
+根据一棵树的前序遍历与中序遍历构造二叉树。
+
+注意:
+你可以假设树中没有重复的元素。
+
+例如，给出
+
+前序遍历 preorder = [3,9,20,15,7]
+中序遍历 inorder = [9,3,15,20,7]
+返回如下的二叉树：
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+建立树
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> preOrder, inOrder;
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        if(preorder.size() == 0) return NULL;
+        preOrder = preorder;
+        inOrder = inorder;
+        return build(0, preorder.size() - 1, 0, inorder.size() - 1);
+    }
+    //分别记录前序和中序列的对应区间，递归
+    TreeNode* build(int p1, int p2, int t1, int t2){
+        if(p1 > p2 || t1 > t2) return NULL;
+        
+        TreeNode* root = new TreeNode(preOrder[p1]);
+        if(p1 == p2) return root;
+        int i;
+        for(i = t1; i <= t2; i++){
+            if(inOrder[i] == preOrder[p1]) break;
+        }
+        root -> left = build(p1 + 1, p1 + i - t1, t1, i - 1);
+        root -> right = build(p1 + i - t1 + 1, p2, i + 1, t2);
+        return root;
+    }
+};
