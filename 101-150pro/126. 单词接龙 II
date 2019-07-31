@@ -1,0 +1,117 @@
+链接：https://leetcode-cn.com/problems/word-ladder-ii
+给定两个单词（beginWord 和 endWord）和一个字典 wordList，找出所有从 beginWord 到 endWord 的最短转换序列。转换需遵循如下规则：
+
+每次转换只能改变一个字母。
+转换过程中的中间单词必须是字典中的单词。
+说明:
+
+如果不存在这样的转换序列，返回一个空列表。
+所有单词具有相同的长度。
+所有单词只由小写字母组成。
+字典中不存在重复的单词。
+你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+示例 1:
+
+输入:
+beginWord = "hit",
+endWord = "cog",
+wordList = ["hot","dot","dog","lot","log","cog"]
+
+输出:
+[
+  ["hit","hot","dot","dog","cog"],
+  ["hit","hot","lot","log","cog"]
+]
+示例 2:
+
+输入:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log"]
+
+输出: []
+
+解释: endWord "cog" 不在字典中，所以不存在符合要求的转换序列。
+
+思路：从beginWord开始，层序遍历，并保存每一层的单词，层数为最短长度
+     层序遍历是需要使用set，查找时间复杂度logn，若直接遍历查找，长达几千个的wordlist会超时
+     建立好的无向图进行dfs回溯
+class Solution {
+public:
+    int minPath = -1;
+    vector<vector<string>> res;
+    unordered_map<string, set<string>> wm;
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+        set<string> words(wordList.begin(), wordList.end());
+        if(words.find(endWord) == words.end()) return res;
+        if(words.find(beginWord) != words.end()) words.erase(words.find(beginWord));
+        
+        //找到每个节点的层序
+        set<string> :: iterator itword;
+        set<string> ws{beginWord};
+        int len, cnt = 0;
+        char cc;
+        while(ws.size()){
+            cnt++;
+            set<string> tws;
+            for(auto w : ws){
+                itword = words.find(w);
+                if(itword != words.end()) words.erase(itword);
+            }
+            for(auto w : ws){
+                set<string> temp;
+                len = w.length();
+                for(int i = 0; i < len; i++){
+                    cc = w[i];
+                    for(int c = 'a'; c < 'z'; c++){
+                        w[i] = c;
+                        itword = words.find(w);
+                        if(itword != words.end()){
+                            temp.insert(w);
+                            if(w == endWord){
+                                if(minPath == -1) minPath = cnt + 1;
+                                else minPath = min(minPath, cnt + 1);
+                            }
+                            //words.erase(itword);
+                        }
+                    }
+                    w[i] = cc;
+                    if(temp.size()){
+                        wm[w] = temp;
+                        tws.insert(temp.begin(), temp.end());
+                    }
+                }
+            }
+            ws = tws;
+        }
+        //cout<<minPath<<endl;
+        
+        /*for(auto i : wm){
+            cout<<i.first<<":\t";
+            for(auto it : i.second) cout<<it<<" ";
+            cout<<endl;
+        }*/
+        vector<string> tt{beginWord};
+        backtracking(beginWord, endWord, tt);
+        
+        return res;
+    }
+    //根据层序的节点回溯遍历
+    void backtracking(string beginWord, string endWord, vector<string>& temp){
+        if(temp.size() > minPath) return;
+        if(beginWord == endWord){
+            if(temp.size() == minPath) res.push_back(vector<string>(temp.begin(), temp.end()));
+            else{
+                minPath = temp.size();
+                res.clear();
+                res.push_back(vector<string>(temp.begin(), temp.end()));
+            }
+        }else{
+            for(auto w : wm[beginWord]){
+                temp.push_back(w);
+                backtracking(w, endWord, temp);
+                temp.pop_back();
+            }
+        }
+    }
+};
