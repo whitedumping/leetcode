@@ -1,0 +1,43 @@
+链接：https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal
+根据一棵树的中序遍历与后序遍历构造二叉树。
+
+注意:
+你可以假设树中没有重复的元素。
+例如，给出
+
+中序遍历 inorder = [9,3,15,20,7]
+后序遍历 postorder = [9,15,7,20,3]
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> postOrder, inOrder;
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        if(inorder.size() == 0) return NULL;
+        postOrder = postorder;
+        inOrder = inorder;
+        return build(0, postorder.size() - 1, 0, inorder.size() - 1);
+    }
+    //选取中序和后续对应的部分
+    TreeNode* build(int p1, int p2, int t1, int t2){
+        if(p1 > p2 || t1 > t2) return NULL;
+        
+        TreeNode* root = new TreeNode(postOrder[p2]);
+        if(p1 == p2) return root;
+        int i;
+        for(i = t1; i <= t2; i++){
+            if(inOrder[i] == postOrder[p2]) break;
+        }
+        root -> right = build(p2 + i - t2, p2 - 1, i + 1, t2);
+        root -> left = build(p1, p2 + i - t2 - 1, t1, i - 1);
+        return root;
+    }
+};
