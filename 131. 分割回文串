@@ -1,0 +1,79 @@
+链接：https://leetcode-cn.com/problems/palindrome-partitioning
+给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+
+返回 s 所有可能的分割方案。
+
+示例:
+
+输入: "aab"
+输出:
+[
+  ["aa","b"],
+  ["a","a","b"]
+]
+
+思路1：dp[][][]，dp[i]表示s中0-i个字符的分割情况
+     dp[i] = {遍历0-i，枚举分割点，若分割点为index，dp[i].push_back() -> dp[index - 1] && substr(index, i - index + 1) 是否为回文}
+
+class Solution {
+public:
+    vector<vector<vector<string>>> dp;
+    string str;
+    vector<vector<string>> partition(string s) {
+        int len = s.length();
+        dp = vector<vector<vector<string>>>(len, vector<vector<string>>());
+        if(len == 0) return vector<vector<string>>();
+        str = s;
+        for(int i = 0; i < len; i++){
+            dp[i] = deal(i);
+        }
+        
+        /*
+        int dpi = 0;
+        for(auto i : dp){
+            cout<<dpi++<<":\t";
+            for(auto ii : i){
+                for(auto iii : ii) cout<<iii<<",";
+                cout<<endl;
+                cout<<"\t";
+            }cout<<endl;
+        }*/
+        
+        return dp[len - 1];
+    }
+    
+    vector<vector<string>> deal(int index){
+        vector<vector<string>> temp;
+        if(index == 0){
+            string ss;
+            ss += str[index];
+            temp.push_back(vector<string>(1, ss));
+            return temp;
+        }
+        for(int i = 0; i <= index; i++){
+            if(isSub(i, index)){
+                string temps = str.substr(i, index - i + 1);
+                if(i == 0){
+                    temp.push_back(vector<string>(1, temps));
+                }else{
+                    //按照dp公式计算
+                    vector<vector<string>> tempdp = dp[i - 1];
+                    for(auto it : tempdp){
+                        vector<string> t(it);
+                        t.push_back(temps);
+                        temp.push_back(t);
+                    }
+                }
+            }
+        }
+        return temp;
+        
+    }
+    //判断是否是回文
+    bool isSub(int l, int r){
+        while(l < r){
+            if(str[l++] != str[r--]) return false;
+        }
+        return true;
+    }
+};
