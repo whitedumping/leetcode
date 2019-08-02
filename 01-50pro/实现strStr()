@@ -7,6 +7,7 @@
 kmp的next数组有点难理解，思路是前后缀的使用
 如：abcabcab
 5号位abcab，前后缀相同的为ab，故该位置匹配失败，可以移动两个位置
+
 void getNext(string s, int next[]){
     next[0] = -1;
     int i = 0, j = -1, len = s.length();
