@@ -1,0 +1,46 @@
+链接：https://leetcode-cn.com/problems/word-break
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note:
+
+The same word in the dictionary may be reused multiple times in the segmentation.
+You may assume the dictionary does not contain duplicate words.
+Example 1:
+
+Input: s = "leetcode", wordDict = ["leet", "code"]
+Output: true
+Explanation: Return true because "leetcode" can be segmented as "leet code".
+Example 2:
+
+Input: s = "applepenapple", wordDict = ["apple", "pen"]
+Output: true
+Explanation: Return true because "applepenapple" can be segmented as "apple pen apple".
+             Note that you are allowed to reuse a dictionary word.
+Example 3:
+
+Input: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+Output: false
+
+//记忆化回溯
+//memo[i]保存当前点是否能到达最后
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        set<string> word_set(wordDict.begin(), wordDict.end());
+        vector<int> memo(s.length(), 2);
+        return backtracking(0, s, word_set, memo);
+    }
+    
+    bool backtracking(int start, string s, set<string>& word_set, vector<int>& memo){
+        if(start == s.length()) return 1;
+        if(memo[start] != 2) return memo[start];
+        for(int i = start; i < s.length(); i++){
+            if(word_set.find(s.substr(start, i - start + 1)) != word_set.end() && backtracking(i + 1, s, word_set, memo)){
+                memo[start] = 1;
+                return 1;
+            }
+        }
+        if(memo[start] == 2) memo[start] = 0;
+        return memo[start];
+    }
+};
