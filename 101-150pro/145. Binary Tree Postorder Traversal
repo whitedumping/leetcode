@@ -1,0 +1,40 @@
+链接：https://leetcode-cn.com/problems/binary-tree-postorder-traversal
+Given a binary tree, return the postorder traversal of its nodes' values.
+
+Example:
+
+Input: [1,null,2,3]
+   1
+    \
+     2
+    /
+   3
+
+Output: [3,2,1]
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> postorderTraversal(TreeNode* root) {
+        stack<TreeNode*> st;
+        TreeNode* q;
+        vector<int> res;
+        if(root == NULL) return res;
+        st.push(root);
+        while(!st.empty()){
+            q = st.top();
+            st.pop();
+            res.insert(res.begin(), q -> val);
+            if(q -> left != NULL) st.push(q -> left);
+            if(q -> right != NULL) st.push(q -> right);
+        }
+        return res;
+    }
+};
