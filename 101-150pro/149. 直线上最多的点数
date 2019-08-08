@@ -1,0 +1,79 @@
+链接：https://leetcode-cn.com/problems/max-points-on-a-line
+给定一个二维平面，平面上有 n 个点，求最多有多少个点在同一条直线上。
+
+示例 1:
+
+输入: [[1,1],[2,2],[3,3]]
+输出: 3
+解释:
+^
+|
+|        o
+|     o
+|  o  
++------------->
+0  1  2  3  4
+示例 2:
+
+输入: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+输出: 4
+解释:
+^
+|
+|  o
+|     o        o
+|        o
+|  o        o
++------------------->
+0  1  2  3  4  5  6
+
+//二层循环依次枚举每个点，用set去掉相同的点
+class Solution {
+public:
+    map<pair<int, int>, int> mp;
+    int maxPoints(vector<vector<int>>& points) {
+        //[[0,0],[94911151,94911150],[94911152,94911151]]
+        //cout<<(94911150.0/94911151 == 94911151.0/94911152)<<endl;
+        int m = points.size(), res = 0, temp, cnt = 0;
+        if(m < 2) return m;
+        int t, a, b;
+        string s;
+        set<pair<int, int>> points_set;
+        for(int i = 0; i < m; i++){
+            mp.clear();
+            temp = 0;
+            cnt = 0;
+            s = "";
+            if(points_set.find(make_pair(points[i][0], points[i][1])) != points_set.end()){
+                continue;
+            }
+            points_set.insert(make_pair(points[i][0], points[i][1]));
+            for(int j = i + 1; j < m; j++){
+                if(points[j][0] == points[i][0] && points[j][1] == points[i][1]){
+                    cnt++;
+                    continue;
+                }
+                if(points[j][0] == points[i][0]){
+                    temp = (temp != 0 ? temp + 1 : 1);
+                    continue;
+                }
+                a = points[j][1] - points[i][1], b = points[j][0] - points[i][0];
+                t = gcd(a, b);
+                pair<int, int> pair_temp = make_pair(a / t, b / t);
+                //t = 1.0 * (points[j][1] - points[i][1]) / (points[j][0] - points[i][0]);
+                if(mp.find(pair_temp) != mp.end()) mp[pair_temp]++;
+                else mp[pair_temp] = 1;
+            }
+            res = max(res, temp + cnt);
+            for(auto im : mp){
+                if(im.second + cnt > res) res = im.second + cnt;
+            }
+        }
+        //if(res == 0) cnt = (cnt == 1 ? 2 : cnt);
+        return res + 1;
+    }
+    int gcd(int a, int b){
+        if(b == 0) return a;
+        else return gcd(b, a % b);
+    }
+};
