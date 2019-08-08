@@ -1,0 +1,59 @@
+链接：https://leetcode-cn.com/problems/palindrome-partitioning-ii
+给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+
+返回符合要求的最少分割次数。
+
+示例:
+
+输入: "aab"
+输出: 1
+解释: 进行一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+
+dp[i][j]表示字符串下标i-j是回文字符串
+ 若s[i] == s[j] 则只需要判断 i - j < 3 || flag[j + 1][i - 1] == 1
+
+class Solution {
+public:
+    int minCut(string s) {
+        int len = s.length();
+        vector<int> dp(len);
+        vector<vector<int>> flag(len, vector<int>(len, 0));
+        for(int i = 0; i < len; i++){
+            dp[i] = i;
+            flag[i][i] = 1;
+        }
+        
+        string temps;
+        int minC = len;
+        for(int i = 0; i < len; i++){
+            if(isP(0, i, s)){
+                dp[i] = 0;
+                continue;
+            }
+            for(int j = i; j > 0; j--){
+                /*if(isP(j, i, s)){
+                    dp[i] = min(dp[i], dp[j - 1] + 1);
+                }*/
+                if(s[i] == s[j]){
+                    if(i - j < 3 || flag[j + 1][i - 1] == 1){
+                        dp[i] = min(dp[i], dp[j - 1] + 1);
+                        flag[j][i] = 1;
+                    }
+                }
+                
+            }
+        }
+        
+        //for(auto it : dp) cout<<it<<" ";
+        //cout<<endl;
+        
+        return dp[len - 1];
+    }
+    //判断是否是回文
+    bool isP(int l, int r, string& s){
+        while(l < r){
+            if(s[l++] != s[r--]) return false;
+        }
+        return true;
+    }
+};
