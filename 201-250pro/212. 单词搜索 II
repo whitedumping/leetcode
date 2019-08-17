@@ -1,0 +1,106 @@
+链接：https://leetcode-cn.com/problems/word-search-ii
+给定一个二维网格 board 和一个字典中的单词列表 words，找出所有同时在二维网格和字典中出现的单词。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母在一个单词中不允许被重复使用。
+
+示例:
+
+输入: 
+words = ["oath","pea","eat","rain"] and board =
+[
+  ['o','a','a','n'],
+  ['e','t','a','e'],
+  ['i','h','k','r'],
+  ['i','f','l','v']
+]
+
+输出: ["eat","oath"]
+说明:
+你可以假设所有输入都由小写字母 a-z 组成。
+
+//思路运用kmp查找重复的子串，来减少次数，可惜超时
+class Solution {
+public:
+    int m, n;
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+        m = board.size(), n = board[0].size();
+        vector<string> res;
+        vector<vector<bool>> flag(m, vector<bool>(n, 0));
+        for(auto word : words){
+            //判断word是否为res中某一个串的子串
+            bool isStr = false;
+            for(auto ans : res){
+                int len1 = ans.length(), len2 = word.length();
+                if(len2 > len1) continue;
+                vector<int> next = getNext(word);
+                int i = 0, j = 0;
+                while(i < len1 && j < len2){
+                    if(j == -1 || ans[i] == word[j]){
+                        i++;
+                        j++;
+                    }else j = next[j];
+                }
+                //word为ans的一个子串
+                if(j == len2) {
+                    isStr = true;
+                    break;
+                }
+            }
+            if(isStr){
+                res.push_back(word);
+                continue;
+            }
+            
+            bool isCon = false;
+            for(int i = 0; i < m && !isCon; i++){
+                for(int j = 0; j < n && !isCon; j++){
+                    if(board[i][j] == word[0] && contain(board, flag, i, j, word, 0, &isCon)){
+                        res.push_back(word);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+    
+    vector<int> getNext(string s){
+        int len = s.length();
+        vector<int> next = vector<int>(len);
+        next[0] = -1;
+        int i = 0, j = -1;
+        while(i < len - 1){
+            if(j == -1 || s[i] == s[j]){
+                i++;
+                j++;
+                next[i] = j;
+            }else j = next[j];
+        }
+        return next;
+    }
+    
+    bool contain(vector<vector<char>>& board, vector<vector<bool>>& flag, int a, int b, string word, int start, bool *isCon){
+        if(start == word.length() - 1){
+            *isCon = true;
+            return true;
+        }
+        flag[a][b] = 1;
+        //up
+        if(!*isCon && a >= 1 && !flag[a - 1][b] && board[a - 1][b] == word[start + 1]){
+            contain(board, flag, a - 1, b, word, start + 1, isCon);
+        }
+        //down
+        if(!*isCon && a + 1 < m && !flag[a + 1][b] && board[a + 1][b] == word[start + 1]){
+            contain(board, flag, a + 1, b, word, start + 1, isCon);
+        }
+        //right
+        if(!*isCon && b + 1 < n && !flag[a][b + 1] && board[a][b + 1] == word[start + 1]){
+            contain(board, flag, a, b + 1, word, start + 1, isCon);
+        }
+        //left
+        if(!*isCon && b >= 1 && !flag[a][b - 1] && board[a][b - 1] == word[start + 1]){
+            contain(board, flag, a, b - 1, word, start + 1, isCon);
+        }
+        flag[a][b] = 0;
+        return *isCon;
+    }
+};
