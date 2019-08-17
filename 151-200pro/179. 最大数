@@ -1,0 +1,33 @@
+链接：https://leetcode-cn.com/problems/largest-number
+给定一组非负整数，重新排列它们的顺序使之组成一个最大的整数。
+
+示例 1:
+
+输入: [10,2]
+输出: 210
+示例 2:
+
+输入: [3,30,34,5,9]
+输出: 9534330
+
+//排序运用，string ab = a + b, ba = b + a;，按照ab与ba的大小排序
+class Solution {
+public:
+    static bool cmp(string a, string b){
+        string ab = a + b, ba = b + a;
+        return ab > ba;
+    }
+    
+    string largestNumber(vector<int>& nums) {
+        
+        vector<string> n;
+        for(auto i : nums) n.push_back(to_string(i));
+        
+        sort(n.begin(), n.end(), cmp);
+        
+        string res;
+        if(n[0] == "0") return "0";
+        for(auto i : n) res += i;
+        return res;
+    }
+};
