@@ -18,7 +18,7 @@ words = ["oath","pea","eat","rain"] and board =
 说明:
 你可以假设所有输入都由小写字母 a-z 组成。
 
-//思路运用kmp查找重复的子串，来减少次数，可惜超时
+//方法一：思路运用kmp查找重复的子串，来减少次数，可惜超时
 class Solution {
 public:
     int m, n;
@@ -102,5 +102,91 @@ public:
         }
         flag[a][b] = 0;
         return *isCon;
+    }
+};
+
+//方法二：使用字典树，一次便能够比较前缀相同的单纯
+class Trie{
+public:
+    bool isEnd = false;
+    Trie* next[26];
+    
+    Trie(){
+        memset(next, 0, sizeof(next));
+    }
+    
+    void insert(string word){
+        Trie * node = this;
+        for(auto w : word){
+            if(node -> next[w - 'a'] == NULL){
+                node -> next[w - 'a'] = new Trie();
+            }
+            node = node -> next[w - 'a'];
+        }
+        node -> isEnd = true;
+    }
+    
+    bool find(string word){
+        Trie * node = this;
+        for(auto w : word){
+            if(node -> next[w - 'a'] == NULL){
+                return false;
+            }
+            node = node -> next[w - 'a'];
+        }
+        return node -> isEnd;
+    }
+};
+
+class Solution {
+public:
+    set<string> res_set;
+    int m, n;
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+        m = board.size(), n = board[0].size();
+        Trie* dic = new Trie();
+        for(auto word : words) dic -> insert(word);
+        //cout<<dic -> find("rain");
+        
+        vector<vector<bool>> flag(m, vector<bool>(n, 0));
+        string temp;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                //表示存在board[i][j]开头的word
+                if(dic -> next[board[i][j] - 'a'] != NULL){
+                    temp = board[i][j];
+                    contain(board, flag, i, j, dic -> next[board[i][j] - 'a'], temp);
+                }
+            }
+        }
+        
+        return vector<string>(res_set.begin(), res_set.end());
+    }
+    
+    void contain(vector<vector<char>>& board, vector<vector<bool>>& flag, int a, int b, Trie* node, string w){
+        if(node -> isEnd){
+            res_set.insert(w);
+            //该处不能找到一个单词返回，有多个前缀相同的单词需要取比较
+            //return ;
+        }
+        flag[a][b] = 1;
+        //up
+        if(a >= 1 && !flag[a - 1][b] && node -> next[board[a - 1][b] - 'a'] != NULL){
+            contain(board, flag, a - 1, b, node -> next[board[a - 1][b] - 'a'], w + board[a - 1][b]);
+        }
+        //down
+        if(a + 1 < m && !flag[a + 1][b] && node -> next[board[a + 1][b] - 'a'] != NULL){
+            contain(board, flag, a + 1, b, node -> next[board[a + 1][b] - 'a'], w + board[a + 1][b]);
+        }
+        //right
+        if(b + 1 < n && !flag[a][b + 1] && node -> next[board[a][b + 1] - 'a'] != NULL){
+            contain(board, flag, a, b + 1, node -> next[board[a][b + 1] - 'a'], w + board[a][b + 1]);
+        }
+        //left
+        if(b >= 1 && !flag[a][b - 1] && node -> next[board[a][b - 1] - 'a'] != NULL){
+            contain(board, flag, a, b - 1, node -> next[board[a][b - 1] - 'a'], w + board[a][b - 1]);
+        }
+        flag[a][b] = 0;
+        //return *isCon;
     }
 };
