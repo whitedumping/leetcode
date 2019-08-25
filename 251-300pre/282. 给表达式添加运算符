@@ -1,0 +1,108 @@
+给定一个仅包含数字 0-9 的字符串和一个目标值，在数字之间添加二元运算符（不是一元）+、- 或 * ，返回所有能够得到目标值的表达式。
+
+示例 1:
+
+输入: num = "123", target = 6
+输出: ["1+2+3", "1*2*3"] 
+示例 2:
+
+输入: num = "232", target = 8
+输出: ["2*3+2", "2+3*2"]
+示例 3:
+
+输入: num = "105", target = 5
+输出: ["1*0+5","10-5"]
+示例 4:
+
+输入: num = "00", target = 0
+输出: ["0+0", "0-0", "0*0"]
+示例 5:
+
+输入: num = "3456237490", target = 9191
+输出: []
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/expression-add-operators
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+回溯：对每个位置选+，-，*进行枚举，由于*的优先级较高，通过保存前一个数，判断后一个运算符选择
+      +/-：将前一个数计算到left中
+      *：当前数与前一个数相乘，然后替换为前一个数
+
+class Solution {
+public:
+    int lent;
+    vector<string> res;
+    vector<string> addOperators(string num, int target) {
+        lent = to_string(target).length();
+        int len = num.length();
+        long left;
+        
+        if(num[0] == '0'){
+            left = stol(num.substr(0, 1));
+            backtracking(0, num.substr(1, len - 1), '+', left, num.substr(0, 1), target, "0");
+            return res;
+        }
+        
+        for(int i = 0; i < len; i++){
+            left = stol(num.substr(0, i + 1));
+            backtracking(0, num.substr(i + 1, len - i - 1), '+', left, num.substr(0, i + 1), target, "0");
+        }
+        return res;
+    }
+    
+    void backtracking(long left, string num, char pre_c, long pre_n, string pre_s, int target, string temp){
+        //cout<<temp<<pre_c<<pre_s<<"!"<<num<<endl;
+        //该处减枝，利用数的位数来减去明显无必要的枚举
+        if(to_string(left).length() + num.length() + to_string(pre_n).length() < lent)
+        {
+            return;
+        }
+        if(num == ""){
+            if(pre_c == '+' && left + pre_n == target){
+                string tt = temp + pre_c + pre_s;
+                //cout<<tt<<endl;
+                res.push_back(tt.substr(2, tt.length() - 2));
+            }
+            if(pre_c == '-' && left - pre_n == target){
+                string tt = temp + pre_c + pre_s;
+                //cout<<endl;
+                res.push_back(tt.substr(2, tt.length() - 2));
+            }
+            if(pre_c == '*' && left * pre_n == target){
+                string tt = temp + pre_c + pre_s;
+                //cout<<tt<<endl;
+                res.push_back(tt.substr(2, tt.length() - 2));
+            }
+            return;
+        }
+        
+        long t = stol(num);
+        
+        int len = num.length();
+        string n;
+        
+        for(int i = 0; i < len; i++){
+            n = num.substr(0, i + 1);
+            t = stol(n);
+            if(pre_c == '+'){
+                backtracking(left + pre_n, num.substr(i + 1, len - i - 1), '+', t, n, target, temp + pre_c + pre_s);
+                backtracking(left + pre_n, num.substr(i + 1, len - i - 1), '-', t, n, target, temp + pre_c + pre_s);
+                backtracking(left, num.substr(i + 1, len - i - 1), pre_c, pre_n * t, pre_s + '*' + n, target, temp);
+            }
+            if(pre_c == '-'){
+                backtracking(left - pre_n, num.substr(i + 1, len - i - 1), '+', t, n, target, temp + pre_c + pre_s);
+                backtracking(left - pre_n, num.substr(i + 1, len - i - 1), '-', t, n, target, temp + pre_c + pre_s);
+                backtracking(left, num.substr(i + 1, len - i - 1), pre_c, pre_n * t, pre_s + '*' + n, target, temp);
+            }
+            if(pre_c == '*'){
+                backtracking(left, num.substr(i + 1, len - i - 1), pre_c, pre_n * t, pre_s + '*' + n, target, temp);
+                //backtracking(left, num.substr(i + 1, len - i - 1), pre_c, pre_n * t, pre_s + '*' + n, target, temp);
+            }
+            //该处对于0的情况，只能选一个或者将0并到上一个数中
+            //105  1!0!5  10!5
+            if(num[0] == '0') break;
+        }
+    }
+};
