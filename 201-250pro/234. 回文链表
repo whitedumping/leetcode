@@ -1,0 +1,81 @@
+请判断一个链表是否为回文链表。
+
+示例 1:
+
+输入: 1->2
+输出: false
+示例 2:
+
+输入: 1->2->2->1
+输出: true
+进阶：
+你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-linked-list
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        if(!head) return true;
+        int cnt = 0;
+        ListNode *fast = head, *slow = head;
+        while(fast != NULL && fast -> next != NULL){
+            slow = slow -> next;
+            fast = fast -> next;
+            ++cnt;
+            if(fast != NULL) ++cnt, fast = fast -> next;
+        }
+        if(fast != NULL && fast -> next == NULL) ++cnt;
+        if(cnt == 1) return true;
+        fast = head;
+        while(fast -> next != slow){
+            fast = fast -> next;
+        }
+        fast -> next = NULL;
+        
+        //翻转
+        ListNode *p = new ListNode(0);
+        ListNode *t, *tt;
+        while(slow != NULL){
+            t = slow;
+            slow = slow -> next;
+            t -> next = p -> next;
+            p -> next = t;
+        }
+        
+        bool res = true;
+        tt = head;
+        t = p -> next;
+        while(tt != NULL){
+            if(tt -> val != t -> val){
+                res = false;
+                break;
+            }
+            tt = tt -> next;
+            t = t -> next;
+        }
+        
+        slow = p -> next;
+        p -> next = NULL;
+        while(slow != NULL){
+            t = slow;
+            slow = slow -> next;
+            t -> next = p -> next;
+            p -> next = t;
+        }
+        fast -> next = p -> next;
+        
+        return res;
+    }
+};
