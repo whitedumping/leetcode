@@ -1,0 +1,45 @@
+给定一个字符串 s，你可以通过在字符串前面添加字符将其转换为回文串。找到并返回可以用这种方式转换的最短回文串。
+
+示例 1:
+
+输入: "aacecaaa"
+输出: "aaacecaaa"
+示例 2:
+
+输入: "abcd"
+输出: "dcbabcd"
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/shortest-palindrome
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//kmp
+class Solution {
+public:
+    string shortestPalindrome(string s) {
+        int len = s.length();
+        string rev(s);
+        reverse(rev.begin(), rev.end());
+        vector<int> next = getNext(s + '#' + rev);
+        //for(auto n : next) cout<<n<<" ";
+        //cout<<endl;
+        //string rev = s.substr();
+        return rev.substr(0, len - next[2 * len] - 1) + s;
+        //return "";
+    }
+    
+    vector<int> getNext(string s){
+        int len = s.length();
+        vector<int> next(len);
+        next[0] = -1;
+        int i = 0, j = -1;
+        while(i < len - 1){
+            if(j == -1 || s[i] == s[j]){
+                i++;
+                j++;
+                next[i] = j;
+            }else j = next[j];
+        }
+        return next;
+    }
+};
