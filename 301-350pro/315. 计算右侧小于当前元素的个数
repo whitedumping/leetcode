@@ -1,0 +1,67 @@
+给定一个整数数组 nums，按要求返回一个新数组 counts。数组 counts 有该性质： counts[i] 的值是  nums[i] 右侧小于 nums[i] 的元素的数量。
+示例：
+输入：[5,2,6,1]
+输出：[2,1,1,0] 
+解释：
+5 的右侧有 2 个更小的元素 (2 和 1)
+2 的右侧仅有 1 个更小的元素 (1)
+6 的右侧有 1 个更小的元素 (1)
+1 的右侧有 0 个更小的元素
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/count-of-smaller-numbers-after-self
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//利用二分算法，维护一个二分数组的索引，merge后两边的是具有大小区分的
+class Solution {
+public:
+    vector<int> index;
+    vector<int> helper;
+    vector<int> count;
+    vector<int> countSmaller(vector<int>& nums) {
+        int len = nums.size();
+        index = vector<int>(len, 0);
+        helper = vector<int>(len, 0);
+        count = vector<int>(len, 0);
+        for(int i = 0; i < len; ++i) index[i] = i;
+        merge(nums, 0, len - 1);
+        //for(auto i : index) cout<<i<<ends;
+        return count;
+    }
+
+    void merge(vector<int>& nums, int s, int e){
+        if(s >= e) return;
+        int mid = (s + e) >> 1;
+
+        if(s < mid) merge(nums, s, mid);
+
+        if(mid + 1 < e) merge(nums, mid + 1, e);
+
+        int i = s, j = mid + 1;
+        int hi = s;
+        //从大到小排
+        while(i <= mid && j <= e){
+            if(nums[index[i]] <= nums[index[j]]){
+                //right out
+                helper[hi++] = index[j++];
+            }else {
+                //count
+                count[index[i]] += e - j + 1;
+                //left out
+                helper[hi++] = index[i++];
+            }
+        }
+
+        while(i <= mid){
+            helper[hi++] = index[i++];
+        }
+
+        while(j <= e){
+            helper[hi++] = index[j++];
+        }
+
+        for(int k = s; k <= e; ++k){
+            index[k] = helper[k];
+        }
+    }
+};
