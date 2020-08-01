@@ -1,0 +1,61 @@
+给定一个无序的数组 nums，将它重新排列成 nums[0] < nums[1] > nums[2] < nums[3]... 的顺序。
+
+示例 1:
+
+输入: nums = [1, 5, 1, 1, 6, 4]
+输出: 一个可能的答案是 [1, 4, 1, 5, 1, 6]
+示例 2:
+
+输入: nums = [1, 3, 2, 2, 3, 1]
+输出: 一个可能的答案是 [2, 3, 1, 3, 1, 2]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/wiggle-sort-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//先找到中位数，三路排序，将中位数全部至于中间，左边比中位数小，右边比中位数大
+
+class Solution {
+public:
+    void wiggleSort(vector<int>& nums) {
+        int len = nums.size();
+        if(len == 1)  return;
+        int mid = len / 2;
+        nth_element(nums.begin(), nums.begin() + mid, nums.end());
+        
+        //3-partion sort 将中位数集中到中部
+        int i = 0, j = 0, k = len - 1;
+        while(j < k){
+            if(nums[j] > nums[mid]){
+                swap(nums[j], nums[k]);
+                --k;
+            }
+            else if(nums[j] < nums[mid]){
+                swap(nums[j], nums[i]);
+                ++i;
+                ++j;
+            }
+            else{
+                ++j;
+            }
+        }
+        for(auto ii : nums) cout<<ii<<" ";
+        cout<<endl;
+        
+        //reverse(nums.begin(), nums.begin() + mid);
+        //reverse(nums.begin() + mid, nums.end());
+
+        if(len % 2) mid++;
+        vector<int> t1(nums.begin(), nums.begin() + mid);
+        vector<int> t2(nums.begin() + mid, nums.end());
+
+        for(int i = 0; i < t1.size(); ++i){
+            nums[2 * i] = t1[t1.size() - 1 - i];
+            //cout<<2 * i<<"=="<<nums[2 * i]<<endl;
+        }
+        for(int i = 0; i < t2.size(); ++i){
+            nums[2 * i + 1] = t2[t2.size() - 1 - i];
+            //cout<<2 * i + 1 <<"::"<<nums[2 * i + 1]<<endl;
+        }
+    }
+};.'
