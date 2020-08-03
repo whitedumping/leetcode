@@ -1,0 +1,96 @@
+给定一个整数数组 nums，返回区间和在 [lower, upper] 之间的个数，包含 lower 和 upper。
+区间和 S(i, j) 表示在 nums 中，位置从 i 到 j 的元素之和，包含 i 和 j (i ≤ j)。
+
+说明:
+最直观的算法复杂度是 O(n2) ，请在此基础上优化你的算法。
+
+示例:
+
+输入: nums = [-2,5,-1], lower = -2, upper = 2,
+输出: 3 
+解释: 3个区间分别是: [0,0], [2,2], [0,2]，它们表示的和分别为: -2, -1, 2。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/count-of-range-sum
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//利用set中的排序
+//第二个循环替代为二分查找
+class Solution {
+public:
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        int size = nums.size();
+        multiset<long long> preSums; // 储存前缀和 不能丢弃重复值
+
+        long long preSum = 0;
+        long long ans = 0;
+        for (int i = 0; i < size; i++ ){
+            preSum += nums[i];
+
+            if(preSum >= lower && preSum <= upper )
+                ans++;
+            
+            if(preSums.size() != 0){
+                long long thresh1 = preSum - upper;
+                long long thresh2 = preSum - lower;
+
+                auto it1 = preSums.lower_bound(thresh1);
+                auto it2 = preSums.upper_bound(thresh2);
+
+                ans += (std::distance(it1, it2) );
+            } 
+            preSums.insert(preSum);
+        }
+        return ans;
+    }
+};
+
+
+
+//归并排序
+//上面方法，对应排序后二分查找，归并排序每次对一半的排序中查找，不断返回结果
+
+class Solution {
+public:
+    int LL, UU;
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        LL = lower;
+        UU = upper;
+        int n = nums.size();
+        vector<int64_t> S(n+1,0);
+        vector<int64_t> assist(n+1,0);
+        for(int i=1;i<=n;i++)S[i] = S[i-1] + nums[i-1];        
+        return merge(S,assist,0,n);
+
+    }
+
+    int merge(vector<int64_t>& arr, vector<int64_t>& temp, int left, int right){
+        if(left >= right) return 0;
+
+        int mid = left + ((right - left) / 2);
+        int cnt = 0;
+
+        cnt += merge(arr, temp, left, mid);
+        cnt += merge(arr, temp, mid + 1, right);
+
+        int L = left, t_upper = mid + 1, t_lower = mid + 1;
+        while(L <= mid){
+            while(t_lower <= right && arr[t_lower] - arr[L] < LL) t_lower++;
+            while(t_upper <= right && arr[t_upper] - arr[L] <= UU) t_upper++;
+
+            cnt += t_upper - t_lower;
+            L++;
+        }
+
+        //排序归并
+        int pos = left, l_i = left, r_i = mid + 1;
+        while(l_i <= mid && r_i <= right){
+            temp[pos++] = arr[l_i] < arr[r_i] ? arr[l_i++] : arr[r_i++];
+        }
+        while(l_i <= mid) temp[pos++] = arr[l_i++];
+        while(r_i <= right) temp[pos++] = arr[r_i++];
+        for(int i = left; i <= right; ++i) arr[i] = temp[i];
+        return cnt;
+
+    }
+};
