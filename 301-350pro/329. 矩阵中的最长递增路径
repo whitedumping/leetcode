@@ -1,0 +1,69 @@
+给定一个整数矩阵，找出最长递增路径的长度。
+
+对于每个单元格，你可以往上，下，左，右四个方向移动。 你不能在对角线方向上移动或移动到边界外（即不允许环绕）。
+
+示例 1:
+
+输入: nums = 
+[
+  [9,9,4],
+  [6,6,8],
+  [2,1,1]
+] 
+输出: 4 
+解释: 最长递增路径为 [1, 2, 6, 9]。
+示例 2:
+
+输入: nums = 
+[
+  [3,4,5],
+  [3,2,6],
+  [2,2,1]
+] 
+输出: 4 
+解释: 最长递增路径是 [3, 4, 5, 6]。注意不允许在对角线方向上移动。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-increasing-path-in-a-matrix
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//递增发现，看成有向图，dfs遍历计算当前节点的最大深度
+
+
+class Solution {
+public:
+    vector<vector<int>> temp;
+    int directions[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    int maxrow, maxcol;
+    int ans = 0;
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        if(!matrix.size() || !matrix[0].size()) return 0;
+        maxrow = matrix.size();
+        maxcol = matrix[0].size();
+        temp = vector<vector<int>>(maxrow, vector<int>(maxcol, 0));
+        for(int i = 0; i < maxrow; ++i){
+            for(int j = 0; j < maxcol; ++j) ans = max(ans, dfs(matrix, i, j));
+        }
+        /*
+        for(auto i : temp){
+            for(auto ii : i) cout<<ii<<" ";
+            cout<<endl;
+        }*/
+        return ans;
+    }
+
+    int dfs(vector<vector<int>>& matrix, int row, int col){
+        if(temp[row][col]) return temp[row][col];
+        temp[row][col] = 1;
+        int newrow, newcol;
+        for(int i = 0; i < 4; ++i){
+            newrow = row + directions[i][0];
+            newcol = col + directions[i][1];
+            //存在边
+            if(newcol < maxcol && newcol >= 0 && newrow < maxrow && newrow >= 0 && matrix[row][col] > matrix[newrow][newcol]){
+                temp[row][col] = max(temp[row][col], dfs(matrix, newrow, newcol) + 1);
+            }
+        }
+        return temp[row][col];
+    }
+};
