@@ -1,0 +1,56 @@
+给定一个非空二维矩阵 matrix 和一个整数 k，找到这个矩阵内部不大于 k 的最大矩形和。
+
+示例:
+
+输入: matrix = [[1,0,1],[0,-2,3]], k = 2
+输出: 2 
+解释: 矩形区域 [[0, 1], [-2, 3]] 的数值和是 2，且 2 是不超过 k 的最大数字（k = 2）。
+说明：
+
+矩阵内的矩形区域面积必须大于 0。
+如果行数远大于列数，你将如何解答呢？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//列计算
+//最大子序列和
+
+class Solution {
+public:
+    int maxSumSubmatrix(vector<vector<int>>& matrix, int kk) {
+        int a = matrix.size(), b = matrix[0].size(), ans = INT_MIN;
+        //按列计算
+        for(int k = 0; k < b; ++k){
+            vector<int> row(a, 0);
+            for(int j = k; j < b; ++j){
+                for(int i = 0; i < a; ++i){
+                    row[i] += matrix[i][j];
+                }
+                ans = max(ans, findMaxK(row, kk));
+            }
+            if(ans == kk) break;
+        }
+        return ans;
+    }
+    int findMaxK(vector<int>& row, int kk){
+        //find max
+        int pre = 0, max_t = row[0];
+        for(auto n : row){
+            pre = max(pre + n, n);
+            max_t = max(pre, max_t);
+        }
+        if(max_t <= kk) return max_t;
+        //baoli
+        int ans = INT_MIN;
+        for(int i = 0; i < row.size(); ++i){
+            max_t = 0;
+            for(int j = i; j < row.size(); ++j){
+                max_t += row[j];
+                if(max_t <= kk) ans = max(max_t, ans);
+            }
+        }
+        return ans;
+    }
+};
