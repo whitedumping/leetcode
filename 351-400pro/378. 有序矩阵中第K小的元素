@@ -1,0 +1,53 @@
+给定一个 n x n 矩阵，其中每行和每列元素均按升序排序，找到矩阵中第 k 小的元素。
+请注意，它是排序后的第 k 小元素，而不是第 k 个不同的元素。
+
+ 
+
+示例：
+
+matrix = [
+   [ 1,  5,  9],
+   [10, 11, 13],
+   [12, 13, 15]
+],
+k = 8,
+
+返回 13。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//左上角到右下是递增的
+//可以寻找任意值，划分矩阵左上角，右下角
+//二分取mid
+
+class Solution {
+public:
+    int kthSmallest(vector<vector<int>>& matrix, int k) {
+        int n = matrix.size();
+        int left = matrix[0][0], right = matrix[n - 1][n - 1];
+        int mid;
+        while(left < right){
+            mid = (right + left) >> 1;
+            if(findK(matrix, mid, k)) right = mid;
+            else left = mid + 1;
+        }
+        return left;
+    }
+
+    int findK(vector<vector<int>>& matrix, int mid, int k){
+        int n = matrix.size();
+        int i = n - 1, j = 0, cnt = 0;
+        //count by col
+        while(i >= 0 && j < n){
+            if(matrix[i][j] > mid){
+                --i;
+            }else{
+                cnt += i + 1;
+                ++j;
+            }
+        }
+        return cnt >= k;
+    }
+};
