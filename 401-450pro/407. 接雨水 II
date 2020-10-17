@@ -1,0 +1,61 @@
+给你一个 m x n 的矩阵，其中的值均为非负整数，代表二维高度图每个单元的高度，请计算图中形状最多能接多少体积的雨水。
+
+ 
+
+示例：
+
+给出如下 3x6 的高度图:
+[
+  [1,4,3,1,3,2],
+  [3,2,1,3,2,4],
+  [2,3,3,2,3,1]
+]
+
+返回 4 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/trapping-rain-water-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//由外圈到内，每次判断最低的点，向内寻找，低的即可认为积水
+
+class Solution {
+public:
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        int a = heightMap.size(), b = heightMap[0].size();
+        vector<vector<bool>> visited(a, vector<bool>(b, 0));
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> heap;
+        for(int i = 0; i < a; ++i){//row
+            heap.push(make_pair(heightMap[i][0], make_pair(i, 0)));
+            visited[i][0] = 1;
+            heap.push(make_pair(heightMap[i][b - 1], make_pair(i, b - 1)));
+            visited[i][b - 1] = 1;
+        }
+        for(int j = 0; j < b; ++j){//col
+            heap.push(make_pair(heightMap[0][j], make_pair(0, j)));
+            visited[0][j] = 1;
+            heap.push(make_pair(heightMap[a - 1][j], make_pair(a - 1, j)));
+            visited[a - 1][j] = 1;
+        }
+
+        int res = 0, ta, tb;
+        vector<int> dir{-1, 0, 1, 0, -1};
+
+        while(!heap.empty()){
+            auto it = heap.top();
+            heap.pop();
+            for(int t = 0; t < 4; ++t){//判断当前点[i][j]的周围四个点，计算可以积水量
+                ta = it.second.first + dir[t];
+                tb = it.second.second + dir[t + 1];
+                //计算当前周围的四个点的高度
+                if(ta >= 0 && ta < a && tb >= 0 && tb < b && !visited[ta][tb]){
+                    if(heightMap[ta][tb] < it.first)//当前节点矮，即可积水
+                        res += it.first - heightMap[ta][tb];
+                    heap.push(make_pair(max(it.first, heightMap[ta][tb]), make_pair(ta, tb)));
+                    visited[ta][tb] = 1;
+                }
+            }
+        }
+        return res;
+    }
+};
