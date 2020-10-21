@@ -1,0 +1,65 @@
+给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+注意:
+
+每个数组中的元素不会超过 100
+数组的大小不会超过 200
+示例 1:
+
+输入: [1, 5, 11, 5]
+
+输出: true
+
+解释: 数组可以分割成 [1, 5, 5] 和 [11].
+ 
+
+示例 2:
+
+输入: [1, 2, 3, 5]
+
+输出: false
+
+解释: 数组不能分割成两个元素和相等的子集.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/partition-equal-subset-sum
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//动态规划，0-1背包
+//0-1背包解法，题寻找到最大和的一半target，需要按照背包的，依次寻找每个数，刚好和等于target
+//dp[i][j]，表示0-i中是否能够组成和为j的
+
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int len = nums.size();
+        if(len < 2) return false;
+        int maxNum = nums[0], target = 0;
+        for(auto i : nums){
+            maxNum = max(maxNum, i);
+            target += i;
+        }
+        if(target & 1) return false;
+        target >>= 1;
+        if(target < maxNum) return false;
+        /*
+        vector<vector<bool>> dp(len, vector<bool>(target + 1, 0));
+        for(int i = 0; i < len; ++i) dp[i][0] = true;
+        dp[0][nums[0]] = true;
+        for(int i = 1; i < len; ++i){
+            for(int j = 1; j <= target; ++j){
+                if(j >= nums[i]) dp[i][j] = dp[i - 1][j] | dp[i - 1][j - nums[i]];
+                else dp[i][j] = dp[i - 1][j];
+            }
+        }*/
+        vector<int> dp(target + 1, 0);
+        dp[0] = 1;
+        //dp[nums[0]] = 1;
+        for(int i = 0; i < len; ++i){
+            for(int j = target; j >= nums[i]; --j){
+                dp[j] |= dp[j - nums[i]];
+            }
+        }
+        return dp[target];
+    }
+};
