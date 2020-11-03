@@ -1,0 +1,51 @@
+给定整数 n 和 k，找到 1 到 n 中字典序第 k 小的数字。
+
+注意：1 ≤ k ≤ n ≤ 109。
+
+示例 :
+
+输入:
+n: 13   k: 2
+
+输出:
+10
+
+解释:
+字典序的排列是 [1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9]，所以第二小的数字是 10。
+
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/k-th-smallest-in-lexicographical-order
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//十叉树
+//每次移动以当前树开头的所有子数字
+//如11，移动到12，则可以去掉所有11开头的数
+
+class Solution {
+public:
+    int fcnt(long long idx, int n){
+        int ans = 0;
+        long long t = idx + 1;
+        while(idx <= n){
+            if(t > n + 1)
+                ans += n + 1;
+            else ans += t;
+            ans -= idx;
+            idx *= 10;
+            t *= 10;
+        }
+        return ans;
+    }
+    int findKthNumber(int n, int k) {
+        long long p = 1, idx = 1, temp = 0;
+        cout<<fcnt(10, 10)<<endl;
+        while(p < k){
+            temp = fcnt(idx, n);
+            cout<<idx<<" "<<temp<<endl;
+            if(p + temp > k) idx *= 10, p++;
+            else idx++, p += temp;
+        }
+        return idx;
+    }
+};
